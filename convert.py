@@ -157,7 +157,7 @@ def write_frontmatters(file: Path, content: List[str]) -> List[str]:
 
     # Use Titlecase file name (preserving uppercase words) as title
     title = " ".join(
-        [item if item[0].isupper() else item for item in file.stem.split(" ")]
+        [item for item in file.stem.split(" ")]
     )
 
     # Use last modified time as creation and updated time
