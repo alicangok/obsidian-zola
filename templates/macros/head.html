@@ -209,8 +209,7 @@
         {% set name_array = val | split(pat="-") %}
         {% set_global str = "" %}
         {% for val in name_array %}
-        {% set cap_val = val | capitalize %}
-        {% set_global str = str ~ cap_val ~ " " %}
+        {% set_global str = str ~ val ~ " " %}
         {% endfor %}
         {% set name = str | trim_end_matches(pat=" ") | title %}
         {% if not index %}
