@@ -29,14 +29,9 @@ var options = {
 	},
 	edges: {
 		color: {
-			color: "both",
+			color: "darkgray",
 			highlight: "blue",
 			hover: "blue"	
-		},
-		chosen: {
-			label: function(values, id, selected, hovering) {
-    				values.color = "blue";
-  				}
 		},
 		width: 4,
 		smooth: {
