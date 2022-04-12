@@ -260,7 +260,7 @@ def parse_graph():
     existing_edges = [
         edge for edge in set(edges) if edge[0] in hash_ids and edge[1] in hash_ids
     ]
-    colors = [rgb2hex(cm.get_cmap("Pastel1")(i / 9)) for i in range(9)]
+    # colors = [rgb2hex(cm.get_cmap("Pastel1")(i / 9)) for i in range(9)]
 
     edge_counts = {k: 0 for k in nodes.keys()}
 
