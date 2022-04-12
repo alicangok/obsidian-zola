@@ -13,6 +13,11 @@ var options = {
 		font: {
 			face: "Source Sans Pro",
 		},
+		chosen: {
+			node: function(values, id, selected, hovering) {
+    				values.color = "blue";
+  				}
+		},
 		scaling: {
 			label: {
 				enabled: true
