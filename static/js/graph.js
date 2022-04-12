@@ -28,7 +28,11 @@ var options = {
 		}
 	},
 	edges: {
-		color: { inherit: "both" },
+		color: {
+			color: "both",
+			highlight: "blue",
+			hover: "blue"	
+		},
 		chosen: {
 			label: function(values, id, selected, hovering) {
     				values.color = "blue";
