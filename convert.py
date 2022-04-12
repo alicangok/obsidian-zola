@@ -281,7 +281,7 @@ def parse_graph():
                 "id": hash_ids[url],
                 "label": title,
                 "url": url,
-                "color": colors[top_nodes[url]] if url in top_nodes else "darkgray",
+                "color": "darkgray",
                 "font": {
                     "size": 20 if url in top_nodes else 16,
                 },
