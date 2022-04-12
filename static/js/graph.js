@@ -29,11 +29,11 @@ var options = {
 	},
 	edges: {
 		color: {
-			color: "darkgray",
+			color: "gray",
 			highlight: "blue",
 			hover: "blue"	
 		},
-		width: 4,
+		width: 1,
 		smooth: {
 			type: "continuous",
 		},
