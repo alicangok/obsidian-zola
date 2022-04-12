@@ -9,9 +9,9 @@ function isDark() {
 
 var options = {
 	nodes: {
-		shape: "box",
+		shape: "dot",
 		font: {
-			face: "Tahoma",
+			face: "Source Sans Pro",
 		},
 		scaling: {
 			label: {
