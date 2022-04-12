@@ -1,10 +1,14 @@
 {% macro docs_navigation(page, current_section) %}
 <div class="docs-navigation d-flex justify-content-between">
-  <script>
+    <div class="card my-1">
+    <div class="card-body py-2">
+    <script>
     document.write('<a href="' + document.referrer + '" id="abc">Go Back</a>');
     var link_text = decodeURI(document.referrer.match(/([^\/]*)\/*$/)[1]);
     link_text = link_text[0].toUpperCase() + link_text.slice(1);
-    document.getElementById("abc").innerHTML = "Go Back: " + link_text;
+    document.getElementById("abc").innerHTML = "&larr; " + link_text;
   </script>
+  </div>
+  </div>
 </div>
 {% endmacro %}
