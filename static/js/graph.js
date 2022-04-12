@@ -16,6 +16,9 @@ var options = {
 		chosen: {
 			node: function(values, id, selected, hovering) {
     				values.color = "blue";
+  				},
+			label: function(values, id, selected, hovering) {
+    				values.color = "blue";
   				}
 		},
 		scaling: {
@@ -26,6 +29,11 @@ var options = {
 	},
 	edges: {
 		color: { inherit: "both" },
+		chosen: {
+			label: function(values, id, selected, hovering) {
+    				values.color = "blue";
+  				}
+		},
 		width: 4,
 		smooth: {
 			type: "continuous",
