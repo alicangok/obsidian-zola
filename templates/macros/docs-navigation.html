@@ -1,7 +1,8 @@
 {% macro docs_navigation(page, current_section) %}
 <div class="docs-navigation d-flex justify-content-between">
   <script>
-    document.write('<a href="' + document.referrer + '">Go Back</a>');
+    document.write('<a href="' + document.referrer + '" id="abc">Go Back</a>');
+    document.getElementById("abc").innerHTML = "Go Back: " + document.referrer.match(/([^\/]*)\/*$/)[1];
   </script>
 </div>
 {% endmacro %}
