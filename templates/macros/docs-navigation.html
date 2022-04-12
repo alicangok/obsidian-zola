@@ -2,7 +2,9 @@
 <div class="docs-navigation d-flex justify-content-between">
   <script>
     document.write('<a href="' + document.referrer + '" id="abc">Go Back</a>');
-    document.getElementById("abc").innerHTML = "Go Back: " + document.referrer.match(/([^\/]*)\/*$/)[1];
+    var link_text = decodeURI(document.referrer.match(/([^\/]*)\/*$/)[1]);
+    link_text = dnm[0].toUpperCase() + dnm.slice(1);
+    document.getElementById("abc").innerHTML = "Go Back: " + link_text;
   </script>
 </div>
 {% endmacro %}
