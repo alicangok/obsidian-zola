@@ -4,6 +4,7 @@
     document.write('<a href="' + document.referrer + '" id="abc">Go Back</a>');
     var link_text = decodeURI(document.referrer.match(/([^\/]*)\/*$/)[1]);
     link_text = link_text[0].toUpperCase() + link_text.slice(1);
+    link_text = link_text.replace(/-/g, ' ');
     document.getElementById("abc").innerHTML = "Go Back: " + link_text;
   </script>
 </div>
