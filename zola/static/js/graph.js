@@ -149,7 +149,7 @@ graph.once("afterDrawing", function () {
 		graph.moveTo({
 			position: {
 				x: 0,
-				y: -clientHeight / 6,
+				y: -clientHeight / 20,
 			},
 			scale: graph.getScale() * 1,
 		});
