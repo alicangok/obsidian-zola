@@ -1,12 +1,24 @@
 #!/bin/bash
 
-echo "netlify.toml" >> __obsidian/.gitignore
-mkdir __site/content/docs
+pip install python-slugify
 
-wget https://github.com/zoni/obsidian-export/releases/download/v22.1.0/obsidian-export_Linux-x86_64.bin -O export.bin
-chmod +x export.bin
-./export.bin --frontmatter=never --hard-linebreaks --no-recursive-embeds __obsidian __site/content/docs
+# Avoid copying over netlify.toml (will ebe exposed to public API)
+echo "netlify.toml" >>__obsidian/.gitignore
 
+# Sync Zola template contents
+rsync -a __site/zola/ __site/build
+rsync -a __site/content/ __site/build/content
+
+# Use obsidian-export to export markdown content from obsidian
+mkdir -p __site/build/content/docs __site/build/__docs
+if [ -z "$STRICT_LINE_BREAKS" ]; then
+	__site/bin/obsidian-export --frontmatter=never --hard-linebreaks --no-recursive-embeds __obsidian __site/build/__docs
+else
+	__site/bin/obsidian-export --frontmatter=never --no-recursive-embeds __obsidian __site/build/__docs
+fi
+
+# Run conversion script
 python __site/convert.py
 
-zola --root __site build --output-dir public
+# Build Zola site
+zola --root __site/build build --output-dir public

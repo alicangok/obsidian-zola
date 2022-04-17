@@ -1,211 +1,74 @@
-import os
 import re
-from datetime import datetime
-from os import environ
-from pathlib import Path
-from typing import Callable, List
-from xml.dom import NotFoundErr
+from typing import Dict, List, Tuple
 
-DEFAULTS = {
-    "SITE_URL": None,
-    "SITE_TITLE": "I love obsidian-zol",
-    "TIMEZONE": "Asia/Hong_Kong",
-    "REPO_URL": None,
-    "LANDING_PAGE": "home",
-    "LANDING_TITLE": "I love obsidian-zola!",
-    "LANDING_DESCRIPTION": "I have nothing but intelligence.",
-    "LANDING_BUTTON": "Steal some of my intelligence",
-    "SORT_BY": "title",
-    "GANALYTICS": "",
-}
-
-ZOLA_DIR = Path(__file__).resolve().parent
-DOCS_DIR = ZOLA_DIR / "content" / "docs"
-
-
-def print_step(msg: str):
-    print(msg.center(100, "-"))
-
-
-def process_lines(path: Path, fn: Callable[[str], str]):
-    content = "\n".join([fn(line.rstrip()) for line in open(path, "r").readlines()])
-    open(path, "w").write(content)
-    print_step(str(path))
-    print(content)
-
-
-def step1():
-    """
-    Check environment variables
-    """
-    print_step("CHECKING ENVIRONMENT VARIABLES")
-    for item in DEFAULTS.keys():
-        if item not in environ:
-            def_val = DEFAULTS[item]
-
-            if def_val is None:
-                raise NotFoundErr(f"FATAL ERROR: build.environment.{item} not set!")
-            else:
-                print(
-                    f"WARNING: build.environment.{item} not set! Defaulting to '{def_val}'."
-                )
-                environ[item] = def_val
-        else:
-            print(f"{item}: {environ[item]}")
-
-
-def step2():
-    """
-    Substitute netlify.toml settings into config.toml and landing page
-    """
-
-    print_step("SUBSTITUTING CONFIG FILE AND LANDING PAGE")
-
-    def sub(line: str) -> str:
-        for env_var in DEFAULTS.keys():
-            line = line.replace(f"___{env_var}___", environ[env_var])
-        return line
-
-    process_lines(ZOLA_DIR / "config.toml", sub)
-    process_lines(ZOLA_DIR / "content" / "_index.md", sub)
-
-
-def step3():
-    """
-    Generate _index.md for each section
-    """
-
-    print_step("GENERATING _index.md")
-    sections = list(sorted(DOCS_DIR.glob("**/**"), key=lambda x: str(x).lower()))
-    content = None
-    for idx, section in enumerate(sections):
-        # Set section title as relative path to section
-        title = re.sub(r"^.*?content/docs/*", "", str(section))
-
-        # Call the root section "main"
-        if title == "":
-            title = "main"
-
-        sort_by = (
-            "date"
-            if "SORT_BY" in environ and environ["SORT_BY"].lower() == "date"
-            else "title"
-        )
-
-        # Print frontmatter to file
-        content = [
-            "---",
-            f"title: {title}",
-            "template: docs/section.html",
-            f"sort_by: {sort_by}",
-            f"weight: {idx}",
-            "---",
-        ]
-        open(section / "_index.md", "w").write("\n".join(content))
-    if content:
-        print("\n".join(content))
-
-
-def remove_frontmatters(content: List[str]) -> List[str]:
-    """
-    Remove obsidian-specific frontmatters
-    """
-
-    # Skip if no frontmatters
-    if len(content) == 0 or not content[0].startswith("---"):
-        return content
-
-    # Search for line number where frontmatters ends
-    frontmatter_end = -1
-    for i, line in enumerate(content[1:]):
-        if line.startswith("---"):
-            frontmatter_end = i
-            break
-
-    # Return content without frontmatters
-    if frontmatter_end > 0:
-        return content[frontmatter_end + 2 :]
-
-    # No frontmatters ending tag
-    return content
-
-
-def filter_lines(file: Path, content: List[str]) -> List[str]:
-    """
-    1. Replace obsidian relative links to valid absolute links
-    2. Double escape latex newline
-    """
-    # Replace relative links
-    parent_dir = f"{file.parents[0]}".replace(str(ZOLA_DIR / "content"), "").replace(
-        " ", "%20"
-    )
-
-    # Markdown links: [xxx](yyy)
-    # (\[.+?\]): Capture [xxx] part
-    # \((?!http)(.+?)(?:.md)?\): Capture (yyy) part, ensuring that link is not http and remove .md from markdown files
-    # (#.+)?: Capture any heading tags after ".md"
-    replaced_links = [
-        re.sub(
-            r"(\[.+?\])\((?!http)(.+?)(?:.md)?(#.+)?\)",
-            r"\1(" + parent_dir + r"/\2\3)",
-            line,
-        )
-        for line in content
-    ]
-
-    # Replace ending double forward slashes (in LaTEX) to fix line breaks
-    replaced_slashes = [
-        re.sub(r"\\\\\s*$", r"\\\\\\\\", line) for line in replaced_links
-    ]
-
-    return replaced_slashes
-
-
-def write_frontmatters(file: Path, content: List[str]) -> List[str]:
-    """
-    Write Zola-specific frontmatters
-    """
-
-    # Use Titlecase file name (preserving uppercase words) as title
-    title = " ".join(
-        [item for item in file.stem.split(" ")]
-    )
-
-    # Use last modified time as creation and updated time
-    modified = datetime.fromtimestamp(os.path.getmtime(file))
-
-    return [
-        "---",
-        f"title: {title}",
-        f"date: {modified}",
-        f"updated: {modified}",
-        "template: docs/page.html",
-        "---",
-        *content,
-    ]
-
-
-def step4():
-    """
-    Parse markdown files contents
-    """
-
-    print_step("PARSING MARKDOWN FILES")
-    md_files = list(DOCS_DIR.glob("**/*.md"))
-    for md_file in md_files:
-        content = [line.rstrip() for line in open(md_file, "r").readlines()]
-
-        if str(md_file).endswith("_index.md"):
-            continue
-
-        content = remove_frontmatters(content)
-        content = filter_lines(md_file, content)
-        content = write_frontmatters(md_file, content)
-        open(md_file, "w").write("\n".join(content))
-
+from utils import DocLink, DocPath, Settings, parse_graph, pp, raw_dir, site_dir
 
 if __name__ == "__main__":
-    step1()
-    step2()
-    step3()
-    step4()
+
+    Settings.parse_env()
+    Settings.sub_file(site_dir / "config.toml")
+    Settings.sub_file(site_dir / "content/_index.md")
+
+    nodes: Dict[str, str] = {}
+    edges: List[Tuple[str, str]] = []
+    section_count = 0
+
+    all_paths = list(sorted(raw_dir.glob("**/*")))
+
+    for path in [raw_dir, *all_paths]:
+        doc_path = DocPath(path, Settings.is_true("SLUGIFY"))
+        if doc_path.is_file:
+            if doc_path.is_md:
+                # Page
+                nodes[doc_path.abs_url] = doc_path.page_title
+                content = doc_path.content
+                parsed_lines: List[str] = []
+                for line in content:
+                    parsed_line, linked = DocLink.parse(line, doc_path)
+
+                    # Fix LaTEX new lines
+                    parsed_line = re.sub(r"\\\\\s*$", r"\\\\\\\\", parsed_line)
+
+                    parsed_lines.append(parsed_line)
+
+                    edges.extend([doc_path.edge(rel_path) for rel_path in linked])
+
+                content = [
+                    "---",
+                    f'title: "{doc_path.page_title}"',
+                    f"date: {doc_path.modified}",
+                    f"updated: {doc_path.modified}",
+                    "template: docs/page.html",
+                    "---",
+                    # To add last line-break
+                    "",
+                ]
+                doc_path.write(["\n".join(content), *parsed_lines])
+                print(f"Found page: {doc_path.new_rel_path}")
+            else:
+                # Resource
+                doc_path.copy()
+                print(f"Found resource: {doc_path.new_rel_path}")
+        else:
+            """Section"""
+            # Frontmatter
+            # TODO: sort_by depends on settings
+            content = [
+                "---",
+                f'title: "{doc_path.section_title}"',
+                "template: docs/section.html",
+                f"sort_by: {Settings.options['SORT_BY']}",
+                f"weight: {section_count}",
+                "extra:",
+                f"    sidebar: {doc_path.section_sidebar}",
+                "---",
+                # To add last line-break
+                "",
+            ]
+            section_count += 1
+            doc_path.write_to("_index.md", "\n".join(content))
+            print(f"Found section: {doc_path.new_rel_path}")
+
+    pp(nodes)
+    pp(edges)
+    parse_graph(nodes, edges)
