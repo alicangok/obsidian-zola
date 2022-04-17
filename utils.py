@@ -396,7 +396,7 @@ def parse_graph(nodes: Dict[str, str], edges: List[Tuple[str, str]]):
                 "id": node_ids[url],
                 "label": title,
                 "url": url,
-                "color": PASTEL_COLORS[top_nodes[url]] if url in top_nodes else None,
+                "color": "darkgray",
                 "value": math.log10(edge_counts[url] + 1) + 1,
                 "opacity": 0.1,
             }
