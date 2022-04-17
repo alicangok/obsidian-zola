@@ -140,6 +140,10 @@ graph.once("afterDrawing", function () {
 				scale: graph.getScale() * 1.8,
 			});
 		}
+		else { graph.focus(curr_node.id, {
+				scale: graph.getScale() * 0.9,
+		});
+		}
 	} else {
 		var clientHeight = container.clientHeight;
 		graph.moveTo({
