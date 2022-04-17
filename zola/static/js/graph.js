@@ -68,10 +68,18 @@ var options = {
 		shape: "dot",
 		color: isDark() ? "#8c8e91" : "#dee2e6",
 		font: {
-			face: "Inter",
+			face: "Source Sans Pro",
 			color: isDark() ? "#c9cdd1" : "#616469",
 			strokeColor: isDark() ? "#c9cdd1" : "#616469",
 		},
+		chosen: {
+			node: function(values, id, selected, hovering) {
+    				values.color = "blue";
+  				},
+			label: function(values, id, selected, hovering) {
+    				values.color = "blue";
+  				}
+		},		
 		scaling: {
 			label: {
 				enabled: true,
@@ -79,7 +87,11 @@ var options = {
 		},
 	},
 	edges: {
-		color: { inherit: "both" },
+		color: {
+			color: "gray",
+			highlight: "blue",
+			hover: "blue"	
+		},
 		width: 0.8,
 		smooth: {
 			type: "continuous",
