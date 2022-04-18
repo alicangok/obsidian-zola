@@ -107,9 +107,9 @@ var options = {
 	width: "100%",
 	physics: {
 		solver: "repulsion",
-    		repulsion: {
-      			springLength: 120
-    		},		
+    		// repulsion: {
+      		//	springLength: 120
+    		// },		
 	},
 };
 
