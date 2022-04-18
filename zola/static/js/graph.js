@@ -51,7 +51,7 @@ var max_node_val = Math.max(...nodes.map((node) => node.value));
 if (curr_node) {
 	nodes.update({
 		id: curr_node.id,
-		// value: Math.max(4, max_node_val * 2.5),
+		value: Math.max(4, max_node_val * 2.5),
 		shape: "star",
 		color: "#a6a7ed",
 		font: {
@@ -84,6 +84,8 @@ var options = {
 			label: {
 				enabled: true,
 			},
+			min: 6,
+			max: 18,
 		},
 	},
 	edges: {
